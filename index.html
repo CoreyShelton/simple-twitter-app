@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Output Tweets</title>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<style>
+ul.twitter-output {
+    max-width: 500px;
+    margin: 0 auto;
+    list-style-type: none;
+}
+
+ul.twitter-output li {
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #999;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+ul.twitter-output li span.ti{
+    display: block;
+}
+
+ul.twitter-output li span.ti.ti-bottom {
+    margin-top: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="test"></div>
+
+<!--
+<button type="button" onclick="getTweets()">Get Directions</button>
+-->
+
+<script type="text/javascript">
+
+$.getJSON(
+    "http://localhost/twitter/twitter-working/twitter.php", 
+    function(data){
+        
+        var output = ' ';
+        
+        output += '<ul class="twitter-output">';
+        
+        for (x = 0; x < data.length; x++){
+            
+            output +=  '<li>';
+            output += '<span class="tweet-text ti ti-top">' + data[x].text + '</span>';
+            output += '<span class="tweet-user ti ti-img"><img src="' + data[x].user.profile_image_url + '" /></span>'
+            output += '<span class="tweet-user ti ti-bottom">by ' + data[x].user.name + '</span>'
+            
+            // Check if there are hash tags
+            if (data[x].entities.hashtags.length > 0) {
+                
+                output += '<span class="tweet-user ti ti-hashtags">';
+                
+                // Loop through all of the hash tags
+                for (y = 0; y < data[x].entities.hashtags.length; y++) {
+                    output += ' #' + data[x].entities.hashtags[y].text;
+                } // end for
+                
+                output += '</span>';
+            } // end if
+            
+            output += '</li>';
+            
+        } // end for
+        
+        output += '</ul>';
+           
+        document.getElementById("test").innerHTML = output
+    }
+ )
+ .success(function() { console.log("Success!"); })
+ .error(function(jqXHR, textStatus, errorThrown) {
+    console.log("Error: " + textStatus);     
+    console.log("jqXHR Status: " + jqXHR.status);
+    console.log("errorThrown: " + errorThrown);
+    console.log("Incoming Text: " + jqXHR.responseText);
+ })
+ .complete(function() { console.log("Complete"); });
+</script>
+</body>
+</html>
