@@ -8,6 +8,15 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
 <style>
+form#twitter_handle {
+    width: 138px;
+    margin: 20px auto 50px auto;
+}
+
+form#twitter_handle label {
+    display: block;
+}
+
 ul.twitter-output {
     max-width: 500px;
     margin: 0 auto;
@@ -35,6 +44,14 @@ ul.twitter-output li span.ti.ti-bottom {
 
 <body>
 
+<form id="twitter_handle">
+    <label>Twitter Handle Here:
+        <input id="screen_name" value=""/>
+    </label>
+    <br/>
+    <input type="submit" value="Submit" />
+</form>
+
 <div id="test"></div>
 
 <!--
@@ -43,52 +60,65 @@ ul.twitter-output li span.ti.ti-bottom {
 
 <script type="text/javascript">
 
-$.getJSON(
-    // Be sure this has the correct path to the twitter.php file
-    "http://localhost/twitter/twitter-working/twitter.php", 
-    function(data){
-        
-        var output = ' ';
-        
-        output += '<ul class="twitter-output">';
-        
-        for (x = 0; x < data.length; x++){
+$('#twitter_handle').on('submit', function(e){
+    
+    e.preventDefault();
+    
+    /*----- START -----*/
+    var screen_name = document.getElementById('screen_name').value;
+    var url = "http://localhost/twitter/twitter-working/twitter.php?handle=" + screen_name;
+    
+    console.log(url);
+    
+    $.getJSON(
+        url, 
+        function(data){
             
-            output +=  '<li>';
-            output += '<span class="tweet-text ti ti-top">' + data[x].text + '</span>';
-            output += '<span class="tweet-user ti ti-img"><img src="' + data[x].user.profile_image_url + '" /></span>'
-            output += '<span class="tweet-user ti ti-bottom">by ' + data[x].user.name + '</span>'
+            var output = ' ';
             
-            // Check if there are hash tags
-            if (data[x].entities.hashtags.length > 0) {
+            output += '<ul class="twitter-output">';
+            
+            for (x = 0; x < data.length; x++){
                 
-                output += '<span class="tweet-user ti ti-hashtags">';
+                output +=  '<li>';
+                output += '<span class="tweet-text ti ti-top">' + data[x].text + '</span>';
+                output += '<span class="tweet-user ti ti-img"><img src="' + data[x].user.profile_image_url + '" /></span>'
+                output += '<span class="tweet-user ti ti-bottom">by ' + data[x].user.name + '</span>'
                 
-                // Loop through all of the hash tags
-                for (y = 0; y < data[x].entities.hashtags.length; y++) {
-                    output += ' #' + data[x].entities.hashtags[y].text;
-                } // end for
+                // Check if there are hash tags
+                if (data[x].entities.hashtags.length > 0) {
+                    
+                    output += '<span class="tweet-user ti ti-hashtags">';
+                    
+                    // Loop through all of the hash tags
+                    for (y = 0; y < data[x].entities.hashtags.length; y++) {
+                        output += ' #' + data[x].entities.hashtags[y].text;
+                    } // end for
+                    
+                    output += '</span>';
+                } // end if
                 
-                output += '</span>';
-            } // end if
+                output += '</li>';
+                
+            } // end for
             
-            output += '</li>';
-            
-        } // end for
-        
-        output += '</ul>';
-           
-        document.getElementById("test").innerHTML = output
-    }
- )
- .success(function() { console.log("Success!"); })
- .error(function(jqXHR, textStatus, errorThrown) {
-    console.log("Error: " + textStatus);     
-    console.log("jqXHR Status: " + jqXHR.status);
-    console.log("errorThrown: " + errorThrown);
-    console.log("Incoming Text: " + jqXHR.responseText);
- })
- .complete(function() { console.log("Complete"); });
+            output += '</ul>';
+               
+            document.getElementById("test").innerHTML = output
+        }
+     )
+     .success(function() { console.log("Success!"); })
+     .error(function(jqXHR, textStatus, errorThrown) {
+        console.log("Error: " + textStatus);     
+        console.log("jqXHR Status: " + jqXHR.status);
+        console.log("errorThrown: " + errorThrown);
+        console.log("Incoming Text: " + jqXHR.responseText);
+     })
+     .complete(function() { console.log("Complete"); });
+    /*----- END -----*/
+
+});
+
 </script>
 </body>
 </html>
